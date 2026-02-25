@@ -112,8 +112,7 @@ class GasolBotController extends Controller
 
             // $response = app(TransactionsController::class)->makePayment(new Request($postData));
 
-            $message_response = "A payment of UGX ".number_format($session->amount)." has been initiated on 
-                                    Your $network Phone number $payment_phone_number, Please approve it. ";
+            $message_response = "A payment of UGX ".number_format($session->amount)." has been initiated on Your $network Phone number $payment_phone_number, Please approve it. ";
 
              $this->sendText(
                     $phone,
