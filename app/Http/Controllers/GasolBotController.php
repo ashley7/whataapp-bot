@@ -119,23 +119,28 @@ class GasolBotController extends Controller
 
             // $response = app(TransactionsController::class)->makePayment(new Request($postData));
 
-            $response = collect();       
-
-            $results = $response->getData(true);
-
-            if(isset($results['status'])){
-
-              $this->sendText(
+             $this->sendText(
                     $phone,
-                    $results['msg']
+                    "This payment transaction has been initiated, please check your phone for a prompt"
                 );
 
-            }else{
-                $this->sendText(
-                    $phone,
-                    "This payment transaction has not been successful"
-                );
-            }          
+            // $response = collect();       
+
+            // $results = $response->getData(true);
+
+            // if(isset($results['status'])){
+
+            //   $this->sendText(
+            //         $phone,
+            //         $results['msg']
+            //     );
+
+            // }else{
+            //     $this->sendText(
+            //         $phone,
+            //         "This payment transaction has not been successful"
+            //     );
+            // }          
 
             $session->update(['state' => 'WAIT_PAYMENT']);
 
