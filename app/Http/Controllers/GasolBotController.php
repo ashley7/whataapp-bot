@@ -128,19 +128,25 @@ class GasolBotController extends Controller
     private function sendText($phone, $message)
     {
         return Http::withToken(config('services.whatsapp.token'))
-            ->post($this->url(), [
-                "messaging_product" => "whatsapp",
-                "to" => $phone,
-                "type" => "text",
-                "text" => [
-                    "body" => $message
-                ]
-            ]);
+                    ->withHeaders([
+                        'Content-Type' => 'application/json',
+                    ])
+                    ->post($this->url(), [
+                        "messaging_product" => "whatsapp",
+                        "to" => $phone,
+                        "type" => "text",
+                        "text" => [
+                            "body" => $message
+                        ]
+                    ]);
     }
 
     private function sendMenuButtons($phone)
     {
         Http::withToken(config('services.whatsapp.token'))
+            ->withHeaders([
+                        'Content-Type' => 'application/json',
+                    ])
             ->post($this->url(), [
                 "messaging_product" => "whatsapp",
                 "to" => $phone,
