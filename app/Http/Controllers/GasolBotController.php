@@ -25,21 +25,22 @@ class GasolBotController extends Controller
          Log::info($phone." -".$text."-".$button);
 
        // Reset flow
-      if ($text === 'menu') { 
-        GasolBot::updateOrCreate( 
-            ['phone' => $phone], 
-            [ 
-                'state' => 'START',
-                'meter_number' => null,
-                'amount' => null,
-            ],
-         ); 
-        }
 
-        $session = GasolBot::firstOrCreate( 
+       $session = GasolBot::firstOrCreate( 
             ['phone' => $phone],
             ['state' => 'START'] 
         );
+
+        if ($text === 'menu') { 
+            GasolBot::updateOrCreate( 
+                ['phone' => $phone], 
+                [ 
+                    'state' => 'START',
+                    'meter_number' => null,
+                    'amount' => null,
+                ],
+            ); 
+        }        
 
         /* ================= START ================= */ 
         if ($session->state === 'START') { 
@@ -116,14 +117,14 @@ class GasolBotController extends Controller
 
             // $response = app(TransactionsController::class)->makePayment(new Request($postData));
 
-            $message_response = "A payment of UGX ".number_format($session->amount)." has been initiated on Your $network Phone number $payment_phone_number, Please approve it. ";
+            $message_response = "A payment of UGX ".number_format($session->amount)." has been initiated on\nYour *$network* Phone number *$payment_phone_number*, \nPlease approve it. \nType *MENU* to start over again.";
 
              $this->sendText(
                     $phone,
                     $message_response
                 );
 
-            // $response = collect();       
+             
 
             // $results = $response->getData(true);
 
