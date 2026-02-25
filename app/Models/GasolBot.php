@@ -55,7 +55,12 @@ class GasolBot extends Model
             'i want gas',
             'i need gas',
             'i want to buy gas',
-            'i need a token'
+            'i need a token',
+            'ok',
+            'okay',
+            'thank you',
+            'thanks',
+            'good',
         ];
 
         return $conversationStarters;
