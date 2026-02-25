@@ -182,8 +182,7 @@ class GasolBotController extends Controller
                 "interactive" => [
                     "type" => "button",
                     "body" => [
-                        "text" => "Welcome to GASOL Uganda Self care Agent, 
-                                   What would you like to do?"
+                        "text" => "Welcome to GASOL Uganda Self care Agent, What would you like to do?"
                     ],
                     "action" => [
                         "buttons" => [
