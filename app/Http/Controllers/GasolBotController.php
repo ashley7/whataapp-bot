@@ -207,7 +207,7 @@ class GasolBotController extends Controller
 
             if($request->get('hub_mode')==="subscribe" && $token===config('services.whatsapp.myToken')){
                 $hub_challenge=$request->get('hub_challenge');
-                Log::info("HUB-CHALANGE".$hub_challenge);
+                Log::info("HUB-CHALANGE-".$hub_challenge);
                 return $hub_challenge;
            
              }else{
