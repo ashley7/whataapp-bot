@@ -15,6 +15,9 @@ class GasolBot extends Model
 
         $conversationStarters = [
             'hi',
+            'hi gasol',
+            'hello gasol',
+            'hay gasol',
             'hay',
             'hey',
             'gasol',            
