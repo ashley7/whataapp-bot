@@ -9,5 +9,5 @@ Route::post('whatsapp_webhook', [GasolBotController::class, 'handle']);
 Route::get('whatsapp_webhook', [GasolBotController::class, 'webhook']);
 
 Route::get('/', function () {
-    return view('welcome');
+    return "This is a whatsapp bot setup ..";
 });
