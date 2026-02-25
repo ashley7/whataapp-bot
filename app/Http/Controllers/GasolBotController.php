@@ -190,7 +190,7 @@ class GasolBotController extends Controller
             $this->sendText($phone, $message);
         }
 
-        private function url()
+        function url()
         {
             return "https://graph.facebook.com/"
                 .config('services.whatsapp.version')
