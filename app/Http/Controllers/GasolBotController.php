@@ -24,23 +24,39 @@ class GasolBotController extends Controller
 
          Log::info($phone." -".$text."-".$button);
 
-        // Reset flow
+       // Reset flow
         if ($text === 'menu') {
-            GasolBot::updateOrCreate(
+            $session = GasolBot::updateOrCreate(
                 ['phone' => $phone],
-                ['state' => 'START', 'meter_number' => null, 'amount' => null]
+                [
+                    'state' => 'MENU',
+                    'meter_number' => null,
+                    'amount' => null,
+                ],
             );
+
+            $this->sendMenuButtons($phone);
+            return response()->json(['status' => 'received'], 200);
         }
 
         $session = GasolBot::firstOrCreate(
             ['phone' => $phone],
-            ['state' => 'START']
+            ['state' => 'MENU']
         );
 
-        /* ================= START ================= */
-        if ($session->state === 'START') {
+        // Define active process states
+        $activeStates = [
+            'ENTER_METER',
+            'ENTER_AMOUNT',
+            'ENTER_PHONE_NUMBER',
+            'HELP'
+        ];
+
+        // If user is NOT in a process → show menu
+        if (!in_array($session->state, $activeStates)) {
             $this->sendMenuButtons($phone);
             $session->update(['state' => 'MENU']);
+
             return response()->json(['status' => 'received'], 200);
         }
 
