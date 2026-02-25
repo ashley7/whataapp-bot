@@ -26,11 +26,6 @@ class GasolBotController extends Controller
 
        // Reset flow
 
-       $session = GasolBot::firstOrCreate( 
-            ['phone' => $phone],
-            ['state' => 'START'] 
-        );
-
         if ($text === 'menu') { 
             GasolBot::updateOrCreate( 
                 ['phone' => $phone], 
@@ -40,7 +35,12 @@ class GasolBotController extends Controller
                     'amount' => null,
                 ],
             ); 
-        }        
+        }    
+        
+        $session = GasolBot::firstOrCreate( 
+            ['phone' => $phone],
+            ['state' => 'START'] 
+        );
 
         /* ================= START ================= */ 
         if ($session->state === 'START') { 
