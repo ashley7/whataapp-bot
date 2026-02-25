@@ -25,9 +25,11 @@ class GasolBotController extends Controller
          Log::info($phone." -".$text."-".$button);
 
        // Reset flow
+        $key_words = GasolBot::keyWords();
 
-        if ($text === 'menu') { 
-            GasolBot::updateOrCreate( 
+        if (in_array($text,$key_words)) { 
+
+            GasolBot::updateOrCreate( //reset session
                 ['phone' => $phone], 
                 [ 
                     'state' => 'START',
