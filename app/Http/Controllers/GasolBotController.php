@@ -14,7 +14,7 @@ class GasolBotController extends Controller
 
         $message = $request->input('entry.0.changes.0.value.messages.0');
  
-           Log::info($message);
+        //    Log::info($message);
 
         if (!$message) return response()->json();
 
@@ -22,7 +22,7 @@ class GasolBotController extends Controller
         $text  = strtolower($message['text']['body'] ?? '');
         $button = $message['interactive']['button_reply']['id'] ?? null;
 
-         Log::info($phone." -".$text."-".$button);
+        //  Log::info($phone." -".$text."-".$button);
 
        // Reset flow
         $key_words = GasolBot::keyWords();
@@ -55,7 +55,7 @@ class GasolBotController extends Controller
         if ($session->state === 'MENU') {
 
             if ($button === 'BUY_GAS') {
-                $this->sendText($phone, "Please Enter Your Meter Number");
+                $this->sendText($phone, "Please Enter Your *Meter Number*");
                 $session->update(['state' => 'ENTER_METER']);
                 return response()->json(['status' => 'received'], 200);
             }
@@ -83,7 +83,7 @@ class GasolBotController extends Controller
                 'state' => 'ENTER_AMOUNT'
             ]);
 
-            $this->sendText($phone, "Enter Amount in Uganda Shillings.");
+            $this->sendText($phone, "Enter *Amount* in Uganda Shillings.");
             return response()->json(['status' => 'received'], 200);
         }
 
@@ -94,7 +94,7 @@ class GasolBotController extends Controller
                 'state' => 'ENTER_PHONE_NUMBER'
             ]);
 
-            $this->sendText($phone, "Enter phone number to pay with.");
+            $this->sendText($phone, "Enter *Phone Number* to pay with.");
             return response()->json(['status' => 'received'], 200);
 
         } 
@@ -121,12 +121,10 @@ class GasolBotController extends Controller
 
             $message_response = "A payment of UGX ".number_format($session->amount)." has been initiated on\nYour *$network* Phone number *$payment_phone_number*, \nPlease approve it. \nType *MENU* to start over again.";
 
-             $this->sendText(
+            $this->sendText(
                     $phone,
                     $message_response
-                );
-
-             
+                );             
 
             // $results = $response->getData(true);
 
