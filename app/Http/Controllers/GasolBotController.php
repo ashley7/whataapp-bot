@@ -20,7 +20,7 @@ class GasolBotController extends Controller
 
         $phone = $message['from'];
         $text  = strtolower($message['text']['body'] ?? '');
-        $button = $message['interactive']['button_reply']['title'] ?? null;
+        $button = $message['interactive']['button_reply']['id'] ?? null;
 
          Log::info($phone." -".$text."-".$button);
 
@@ -47,13 +47,13 @@ class GasolBotController extends Controller
         /* ================= MENU ================= */
         if ($session->state === 'MENU') {
 
-            if ($button === 'Buy a Gas Token') {
+            if ($button === 'BUY_GAS') {
                 $this->sendText($phone, "Please Enter Your Meter Number");
                 $session->update(['state' => 'ENTER_METER']);
                 return response()->json(['status' => 'received'], 200);
             }
 
-            if ($button === 'Help') {
+            if ($button === 'HELP') {
                 $this->sendHelp($phone);
                 $session->update(['state' => 'HELP']);
                 return response()->json(['status' => 'received'], 200);
