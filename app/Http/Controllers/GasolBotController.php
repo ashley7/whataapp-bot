@@ -10,35 +10,12 @@ use Illuminate\Support\Facades\Log;
 class GasolBotController extends Controller
 {
     public function handle(Request $request)
-    {
-     
+    {     
 
         $message = $request->input('entry.0.changes.0.value.messages.0');
-
-
-        // $res = array (
-        //     'context' =>
-        //         array (
-        //             'from' => '15550324603',
-        //             'id' => 'wamid.HBgMMjU2Nzg3NDQ0MDgxFQIAERgSQzAzM0NEOTE3RTY0MzNGOEM5AA==',
-        //         ),
-        //     'from' => '256787444081',
-        //     'id' => 'wamid.HBgMMjU2Nzg3NDQ0MDgxFQIAEhgWM0VCMDJGRjU3MTNFREVBODZBNTY1RQA=',
-        //     'timestamp' => '1772011650',
-        //     'type' => 'interactive',
-        //     'interactive' =>
-        //         array (
-        //             'type' => 'button_reply',
-        //             'button_reply' =>
-        //             array (
-        //             'id' => 'HELP',
-        //             'title' => 'Help',
-        //             ),
-        //         ),
-        //     );
-
-
+ 
            Log::info($message);
+
         if (!$message) return response()->json();
 
         $phone = $message['from'];
@@ -113,11 +90,7 @@ class GasolBotController extends Controller
             $this->sendText($phone, "Enter phone number to pay with.");
             return response()->json(['status' => 'received'], 200);
 
-        }else{
-
-            $this->sendText($phone, "A mount should be a number.");
-            return response()->json(['status' => 'received'], 200);
-        }
+        } 
 
         /* ================= ENTER AMOUNT ================= */
         if ($session->state === 'ENTER_PHONE_NUMBER' && is_numeric($text)) {
@@ -163,12 +136,16 @@ class GasolBotController extends Controller
             //         $phone,
             //         $message_response
             //     );
-            // }          
+            // }        
+            
+            $session->update(['state' => 'MENU']);
 
-            $session->update(['state' => 'WAIT_PAYMENT']);
+            // $session->update(['state' => 'WAIT_PAYMENT']);
 
             return response()->json(['status' => 'received'], 200);
         }
+
+         $session->update(['state' => 'START']);
 
         return response()->json(['status' => 'received'], 200);
 
@@ -205,7 +182,8 @@ class GasolBotController extends Controller
                 "interactive" => [
                     "type" => "button",
                     "body" => [
-                        "text" => "What would you like to do?"
+                        "text" => "Welcome to GASOL Uganda Self care Agent, 
+                                   What would you like to do?"
                     ],
                     "action" => [
                         "buttons" => [
