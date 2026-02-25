@@ -11,12 +11,18 @@ class GasolBotController extends Controller
 {
     public function handle(Request $request)
     {
+        Log::info($request);
+
         $message = $request->input('entry.0.changes.0.value.messages.0');
+
+           Log::info($message);
         if (!$message) return response()->json();
 
         $phone = $message['from'];
         $text  = strtolower($message['text']['body'] ?? '');
         $button = $message['button']['text'] ?? null;
+
+         Log::info($phone." -".$text." ".$button);
 
         // Reset flow
         if ($text === 'menu') {
