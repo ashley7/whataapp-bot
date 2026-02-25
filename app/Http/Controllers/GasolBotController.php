@@ -70,8 +70,8 @@ class GasolBotController extends Controller
         /* ================= MENU ================= */
         if ($session->state === 'MENU') {
 
-            if ($button === 'Buy Gas Token') {
-                $this->sendText($phone, "Please enter your meter number");
+            if ($button === 'Buy a Gas Token') {
+                $this->sendText($phone, "Please Enter Your Meter Number");
                 $session->update(['state' => 'ENTER_METER']);
                 return response()->json(['status' => 'received'], 200);
             }
@@ -99,29 +99,52 @@ class GasolBotController extends Controller
                 'state' => 'ENTER_AMOUNT'
             ]);
 
-            $this->sendText($phone, "Enter amount");
+            $this->sendText($phone, "Enter Amount in Uganda Shillings.");
+            return response()->json(['status' => 'received'], 200);
+        }
+
+        /* ================= ENTER PHONE NUMBER ================= */
+        if ($session->state === 'ENTER_AMOUNT' && is_numeric($text)) {
+            $session->update([
+                'amount' => $text,
+                'state' => 'ENTER_PHONE_NUMBER'
+            ]);
+
+            $this->sendText($phone, "Enter phone number to pay with.");
+            return response()->json(['status' => 'received'], 200);
+
+        }else{
+
+            $this->sendText($phone, "A mount should be a number.");
             return response()->json(['status' => 'received'], 200);
         }
 
         /* ================= ENTER AMOUNT ================= */
-        if ($session->state === 'ENTER_AMOUNT' && is_numeric($text)) {
+        if ($session->state === 'ENTER_PHONE_NUMBER' && is_numeric($text)) {
 
             //process payment
 
-            $amount = intval($text);               
+            $phone_number = $text;
+            
+            $payment_phone_number = self::validatePhoneNumber($phone_number);
+
+            $network = self::detectUgandaNetwork($payment_phone_number);
 
             $postData = [
-                'mobile_number' => self::validatePhoneNumber($phone),
+                'mobile_number' => $payment_phone_number,
                 'meter_number'  => $session->meter_number,
-                'amount'        => $amount,
-                'network'       => self::detectUgandaNetwork($phone),
+                'amount'        => $session->amount,
+                'network'       => $network,
             ];
 
             // $response = app(TransactionsController::class)->makePayment(new Request($postData));
 
+            $message_response = "A payment of UGX ".number_format($session->amount)." has been initiated on 
+                                    Your $network Phone number $payment_phone_number, Please approve it. ";
+
              $this->sendText(
                     $phone,
-                    "This payment transaction has been initiated, please check your phone for a prompt"
+                    $message_response
                 );
 
             // $response = collect();       
@@ -138,7 +161,7 @@ class GasolBotController extends Controller
             // }else{
             //     $this->sendText(
             //         $phone,
-            //         "This payment transaction has not been successful"
+            //         $message_response
             //     );
             // }          
 
