@@ -11,18 +11,41 @@ class GasolBotController extends Controller
 {
     public function handle(Request $request)
     {
-        Log::info($request);
+     
 
         $message = $request->input('entry.0.changes.0.value.messages.0');
+
+
+        // $res = array (
+        //     'context' =>
+        //         array (
+        //             'from' => '15550324603',
+        //             'id' => 'wamid.HBgMMjU2Nzg3NDQ0MDgxFQIAERgSQzAzM0NEOTE3RTY0MzNGOEM5AA==',
+        //         ),
+        //     'from' => '256787444081',
+        //     'id' => 'wamid.HBgMMjU2Nzg3NDQ0MDgxFQIAEhgWM0VCMDJGRjU3MTNFREVBODZBNTY1RQA=',
+        //     'timestamp' => '1772011650',
+        //     'type' => 'interactive',
+        //     'interactive' =>
+        //         array (
+        //             'type' => 'button_reply',
+        //             'button_reply' =>
+        //             array (
+        //             'id' => 'HELP',
+        //             'title' => 'Help',
+        //             ),
+        //         ),
+        //     );
+
 
            Log::info($message);
         if (!$message) return response()->json();
 
         $phone = $message['from'];
         $text  = strtolower($message['text']['body'] ?? '');
-        $button = $message['button']['text'] ?? null;
+        $button = $message['interactive']['button_reply']['title'] ?? null;
 
-         Log::info($phone." -".$text." ".$button);
+         Log::info($phone." -".$text."-".$button);
 
         // Reset flow
         if ($text === 'menu') {
