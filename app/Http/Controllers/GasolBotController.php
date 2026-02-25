@@ -145,8 +145,6 @@ class GasolBotController extends Controller
             return response()->json(['status' => 'received'], 200);
         }
 
-         $session->update(['state' => 'START']);
-
         return response()->json(['status' => 'received'], 200);
 
     }
