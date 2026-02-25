@@ -41,7 +41,7 @@ class GasolBotController extends Controller
         if ($session->state === 'START') {
             $this->sendMenuButtons($phone);
             $session->update(['state' => 'MENU']);
-            return response()->json();
+            return response()->json(['status' => 'received'], 200);
         }
 
         /* ================= MENU ================= */
@@ -50,13 +50,13 @@ class GasolBotController extends Controller
             if ($button === 'Buy Gas Token') {
                 $this->sendText($phone, "Please enter your meter number");
                 $session->update(['state' => 'ENTER_METER']);
-                return response()->json();
+                return response()->json(['status' => 'received'], 200);
             }
 
             if ($button === 'Help') {
                 $this->sendHelp($phone);
                 $session->update(['state' => 'HELP']);
-                return response()->json();
+                return response()->json(['status' => 'received'], 200);
             }
         }
 
@@ -66,7 +66,7 @@ class GasolBotController extends Controller
                 $this->sendMenuButtons($phone);
                 $session->update(['state' => 'MENU']);
             }
-            return response()->json();
+            return response()->json(['status' => 'received'], 200);
         }
 
         /* ================= ENTER METER ================= */
@@ -77,7 +77,7 @@ class GasolBotController extends Controller
             ]);
 
             $this->sendText($phone, "Enter amount");
-            return response()->json();
+            return response()->json(['status' => 'received'], 200);
         }
 
         /* ================= ENTER AMOUNT ================= */
@@ -116,10 +116,10 @@ class GasolBotController extends Controller
 
             $session->update(['state' => 'WAIT_PAYMENT']);
 
-            return response()->json();
+            return response()->json(['status' => 'received'], 200);
         }
 
-        return response()->json();
+        return response()->json(['status' => 'received'], 200);
 
     }
 
