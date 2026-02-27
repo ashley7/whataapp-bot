@@ -233,7 +233,7 @@ class GasolBot extends Model
                 "interactive" => [
                     "type" => "button",
                     "body" => [
-                        "text" => "What should I use to retrieve yout Token?"
+                        "text" => "What should I use to retrieve your Token?"
                     ],
                     "action" => [
                         "buttons" => [
