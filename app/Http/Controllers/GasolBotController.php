@@ -4,7 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\GasolBot;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Http;
+ 
 use Illuminate\Support\Facades\Log;
 
 class GasolBotController extends Controller
@@ -46,7 +46,7 @@ class GasolBotController extends Controller
 
         /* ================= START ================= */ 
         if ($session->state === 'START') { 
-            $this->sendMenuButtons($phone);
+            GasolBot::sendMenuButtons($phone);
             $session->update(['state' => 'MENU']);
             return response()->json(['status' => 'received'], 200);
         }
@@ -55,7 +55,7 @@ class GasolBotController extends Controller
         if ($session->state === 'MENU') {
 
             if ($button === 'BUY_GAS') {
-                $this->sendText($phone, "Please Enter Your *Meter Number*");
+                GasolBot::sendText($phone, "Please Enter Your *Meter Number*");
                 $session->update(['state' => 'ENTER_METER']);
                 return response()->json(['status' => 'received'], 200);
             }
@@ -63,6 +63,12 @@ class GasolBotController extends Controller
             if ($button === 'HELP') {
                 $this->sendHelp($phone);
                 $session->update(['state' => 'HELP']);
+                return response()->json(['status' => 'received'], 200);
+            }
+
+             if($button == 'RETRIEVE_TOKEN'){
+                GasolBot::sendTokenButtons($phone);
+                $session->update(['state' => 'RETRIEVE_TOKEN_OPTIONS']);
                 return response()->json(['status' => 'received'], 200);
             }
         }
@@ -106,9 +112,9 @@ class GasolBotController extends Controller
 
             $phone_number = $text;
             
-            $payment_phone_number = self::validatePhoneNumber($phone_number);
+            $payment_phone_number = GasolBot::validatePhoneNumber($phone_number);
 
-            $network = self::detectUgandaNetwork($payment_phone_number);
+            $network = GasolBot::detectUgandaNetwork($payment_phone_number);
 
             $postData = [
                 'mobile_number' => $payment_phone_number,
@@ -149,85 +155,65 @@ class GasolBotController extends Controller
             return response()->json(['status' => 'received'], 200);
         }
 
+
+        if ($session->state === 'RETRIEVE_TOKEN_OPTIONS') {
+
+            if ($button === 'METER_NUMBER') {
+                GasolBot::sendText($phone, "Please Enter Your *Meter Number*.");
+                $session->update(['state' => 'RETRIEVE_WITH_METER']);
+                return response()->json(['status' => 'received'], 200);
+            }
+
+            if ($button === 'TRANSACTION_REFERENCE') {
+                GasolBot::sendText($phone, "Please Enter The *Transaction Reference*.");
+                $session->update(['state' => 'RETRIEVE_WITH_TREF']);
+                return response()->json(['status' => 'received'], 200);
+            }
+
+            if ($button === 'PHONE_NUMBER') {
+                GasolBot::sendText($phone, "Please Enter *Phone Number* That you used to buy the Gas Token");
+                $session->update(['state' => 'RETRIEVE_WITH_PHONE_NUMBER']);
+                return response()->json(['status' => 'received'], 200);
+            }             
+
+        } 
+
+            if ($session->state === 'RETRIEVE_WITH_METER') {
+
+            $message = GasolBot::getTransactions($session->state,$text);
+
+            GasolBot::sendText($phone, $message);
+            
+            return response()->json(['status' => 'received'], 200);
+ 
+        }
+
+        if ($session->state === 'RETRIEVE_WITH_TREF') {
+
+            $message = GasolBot::getTransactions($session->state,$text);
+
+            GasolBot::sendText($phone, $message);
+            
+            return response()->json(['status' => 'received'], 200);
+
+        }
+
+        if ($session->state === 'RETRIEVE_WITH_PHONE_NUMBER') {
+
+            $message = GasolBot::getTransactions($session->state,$text);
+
+            GasolBot::sendText($phone, $message);
+            
+            return response()->json(['status' => 'received'], 200);
+
+        }
+
         return response()->json(['status' => 'received'], 200);
 
     }
 
 
-
-    private function sendText($phone, $message)
-    {
-        return Http::withToken(config('services.whatsapp.token'))
-                    ->withHeaders([
-                        'Content-Type' => 'application/json',
-                    ])
-                    ->post($this->url(), [
-                        "messaging_product" => "whatsapp",
-                        "to" => $phone,
-                        "type" => "text",
-                        "text" => [
-                            "body" => $message
-                        ]
-                    ]);
-    }
-
-    private function sendMenuButtons($phone)
-    {
-        Http::withToken(config('services.whatsapp.token'))
-            ->withHeaders([
-                        'Content-Type' => 'application/json',
-                    ])
-            ->post($this->url(), [
-                "messaging_product" => "whatsapp",
-                "to" => $phone,
-                "type" => "interactive",
-                "interactive" => [
-                    "type" => "button",
-                    "body" => [
-                        "text" => "Welcome to GASOL Uganda Self care Agent, What would you like to do?"
-                    ],
-                    "action" => [
-                        "buttons" => [
-                            [
-                                "type" => "reply",
-                                "reply" => [
-                                    "id" => "BUY_GAS",
-                                    "title" => "Buy Gas Token"
-                                ]
-                            ],
-                            [
-                                "type" => "reply",
-                                "reply" => [
-                                    "id" => "HELP",
-                                    "title" => "Help"
-                                ]
-                            ]
-                        ]
-                    ]
-                ]
-            ]);
-        }
-
-        private function sendHelp($phone)
-        {
-            $message = "*Gas Token Help*\n\n"
-                ."• Buy Gas Token – Purchase gas using our app\n"
-                ."• Enter correct meter number\n"
-                ."• Tokens are credited instantly after payment\n\n"
-                ."📞 Support: +256782033814\n\n"
-                ."Type *MENU* to return";
-
-            $this->sendText($phone, $message);
-        }
-
-        function url()
-        {
-            return "https://graph.facebook.com/"
-                .config('services.whatsapp.version')
-                ."/"
-                .config('services.whatsapp.phone_id')
-                ."/messages";
-        }
+ 
 
         function webhook(Request $request) {
 
@@ -247,81 +233,5 @@ class GasolBotController extends Controller
             }
  
         }
-
-        public function validatePhoneNumber($phone)
-        {
-
-            $phone_number = "";
-
-            if ($phone[0]=="+") {
-
-            $phone_number=str_replace("+256", "0", $phone);
-
-            }elseif ($phone[0]=="2") {
-
-                $phone_number=str_replace("256", "0", $phone);    
-
-            }else{
-
-                $phone_number=$phone;
-
-            }
-
-            return $phone_number;
-
-        }
-
-
-        function detectUgandaNetwork($phone)
-        {
-
-            // Remove spaces, +
-            $phone = preg_replace('/\D/', '', $phone);
-
-            // Convert 07xxxxxxxx → 2567xxxxxxxx
-            if (strlen($phone) === 10 && str_starts_with($phone, '0')) {
-                $phone = '256' . substr($phone, 1);
-            }
-            
-            $mtn = ['25677', '25678', '25676', '25639'];
-        
-            $airtel = ['25670', '25674', '25675', '25620'];
-
-            foreach ($mtn as $prefix) {
-                if (str_starts_with($phone, $prefix)) {
-                    return 'mtn';
-                }
-            }
-
-            foreach ($airtel as $prefix) {
-                if (str_starts_with($phone, $prefix)) {
-                    return 'airtel';
-                }
-            }
-
-            return 'unknown';
-        }
-
-
-        // function getBotToken(){     
-
-        //     $data = [
-        //         'device_id'   => 'WHATSAPP_BOT_001',
-        //         'device_name' => 'WhatsApp Payment Bot',
-        //         'device_type' => 'web',
-        //         'platform'    => 'web',
-        //         'app_version' => '1.0.0',
-        //     ];
-
-        //     $request = new Request($data);
-
-        //     $devive = app(DeviceAuthController::class);
-
-        //     $response = $devive->register($request);
-
-        //     $data = $response->getData(true);  
-
-        //     return $data['data']['token'];
-            
-        // } 
+ 
 }
