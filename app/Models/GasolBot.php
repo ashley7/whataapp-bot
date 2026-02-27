@@ -248,7 +248,7 @@ class GasolBot extends Model
                                 "type" => "reply",
                                 "reply" => [
                                     "id" => "TRANSACTION_REFERENCE",
-                                    "title" => "Transaction reference"
+                                    "title" => "Transaction Ref"
                                 ]
                             ],
                             [
