@@ -14,7 +14,7 @@ class GasolBotController extends Controller
 
         $message = $request->input('entry.0.changes.0.value.messages.0');
  
-        //    Log::info($message);
+           Log::info($message);
 
         if (!$message) return response()->json();
 
@@ -22,7 +22,7 @@ class GasolBotController extends Controller
         $text  = strtolower($message['text']['body'] ?? '');
         $button = $message['interactive']['button_reply']['id'] ?? null;
 
-        //  Log::info($phone." -".$text."-".$button);
+         Log::info($phone." -".$text."-".$button);
 
        // Reset flow
         $key_words = GasolBot::keyWords();
