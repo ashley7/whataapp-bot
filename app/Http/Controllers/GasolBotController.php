@@ -61,14 +61,15 @@ class GasolBotController extends Controller
             }
 
             if ($button === 'HELP') {
-                $this->sendHelp($phone);
+                GasolBot::sendHelp($phone);
                 $session->update(['state' => 'HELP']);
                 return response()->json(['status' => 'received'], 200);
             }
 
              if($button === 'RETRIEVE_TOKEN'){
-                GasolBot::sendTokenButtons($phone);
+                $response = GasolBot::sendTokenButtons($phone);
                 $session->update(['state' => 'RETRIEVE_TOKEN_OPTIONS']);
+                Log::info('TOKEN BUTTON RESPONSE: ' . $response->body());
                 return response()->json(['status' => 'received'], 200);
             }
         }

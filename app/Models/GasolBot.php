@@ -222,7 +222,7 @@ class GasolBot extends Model
 
     public static function sendTokenButtons($phone)
     {
-        Http::withToken(config('services.whatsapp.token'))
+        return Http::withToken(config('services.whatsapp.token'))
             ->withHeaders([
                         'Content-Type' => 'application/json',
                     ])
@@ -267,7 +267,7 @@ class GasolBot extends Model
 
         public static function sendMenuButtons($phone)
         {
-            Http::withToken(config('services.whatsapp.token'))
+            return  Http::withToken(config('services.whatsapp.token'))
                 ->withHeaders([
                             'Content-Type' => 'application/json',
                     ])
