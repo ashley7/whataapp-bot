@@ -97,7 +97,7 @@ class GasolBot extends Model
             ."📞 Support: +256782033814\n\n"
             ."Type *MENU* to return";
 
-        self::sendText($phone, $message);
+        return self::sendText($phone, $message);
     }
 
     public static function url()
@@ -195,7 +195,8 @@ class GasolBot extends Model
 
         // $transactions = $query->latest('transactions.updated_at')->take(5)->get();
         $transactions=collect();
-        $message = '"*GAS PAYMENT RECEIPTS*\n━━━━━━━━━━━━━━━━━━\n" .';
+        $message = "*GAS PAYMENT RECEIPTS*\n";
+        $message .= "━━━━━━━━━━━━━━━━━━\n\n";
 
         foreach ($transactions as $transaction) {
 

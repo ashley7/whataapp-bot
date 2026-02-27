@@ -14,7 +14,7 @@ class GasolBotController extends Controller
 
         $message = $request->input('entry.0.changes.0.value.messages.0');
  
-           Log::info($message);
+        //    Log::info($message);
 
         if (!$message) return response()->json();
 
@@ -22,7 +22,7 @@ class GasolBotController extends Controller
         $text  = strtolower($message['text']['body'] ?? '');
         $button = $message['interactive']['button_reply']['id'] ?? null;
 
-         Log::info($phone." -".$text."-".$button);
+        //  Log::info($phone." -".$text."-".$button);
 
        // Reset flow
         $key_words = GasolBot::keyWords();
@@ -46,7 +46,16 @@ class GasolBotController extends Controller
 
         /* ================= START ================= */ 
         if ($session->state === 'START') { 
-            GasolBot::sendMenuButtons($phone);
+
+           $response = GasolBot::sendMenuButtons($phone);
+
+            if ($response->failed()) {
+                Log::error('WhatsApp Error', [
+                    'status' => $response->status(),
+                    'body' => $response->body(),
+                ]);
+            }
+
             $session->update(['state' => 'MENU']);
             return response()->json(['status' => 'received'], 200);
         }
@@ -55,19 +64,37 @@ class GasolBotController extends Controller
         if ($session->state === 'MENU') {
 
             if ($button === 'BUY_GAS') {
-                GasolBot::sendText($phone, "Please Enter Your *Meter Number*");
+
+                $response = GasolBot::sendText($phone, "Please Enter Your *Meter Number*");
+                
+                if ($response->failed()) {
+                    Log::error('WhatsApp Error', [
+                        'status' => $response->status(),
+                        'body' => $response->body(),
+                    ]);
+                }
+
                 $session->update(['state' => 'ENTER_METER']);
                 return response()->json(['status' => 'received'], 200);
             }
 
             if ($button === 'HELP') {
-                GasolBot::sendHelp($phone);
+                 GasolBot::sendHelp($phone);
+
+              
+
                 $session->update(['state' => 'HELP']);
                 return response()->json(['status' => 'received'], 200);
             }
 
              if($button === 'RETRIEVE_TOKEN'){
                 $response = GasolBot::sendTokenButtons($phone);
+                  if ($response->failed()) {
+                    Log::error('WhatsApp Error', [
+                        'status' => $response->status(),
+                        'body' => $response->body(),
+                    ]);
+                }
                 $session->update(['state' => 'RETRIEVE_TOKEN_OPTIONS']);
                 Log::info('TOKEN BUTTON RESPONSE: ' . $response->body());
                 return response()->json(['status' => 'received'], 200);
