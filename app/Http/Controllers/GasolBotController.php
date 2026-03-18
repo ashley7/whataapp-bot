@@ -14,7 +14,7 @@ class GasolBotController extends Controller
 
         $message = $request->input('entry.0.changes.0.value.messages.0');
  
-        //    Log::info($message);
+           Log::info($message);
 
         if (!$message) return response()->json();
 
