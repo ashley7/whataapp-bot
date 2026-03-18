@@ -6,6 +6,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model; 
 use Illuminate\Support\Facades\Http;
+use Illuminate\Support\Facades\Log;
 
 class GasolBot extends Model
 {
@@ -73,6 +74,7 @@ class GasolBot extends Model
 
     public static function sendText($phone, $message)
     {
+         Log::info($message);
         return Http::withToken(config('services.whatsapp.token'))
                 ->withHeaders([
                     'Content-Type' => 'application/json',
