@@ -4,7 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\GasolBot;
 use Illuminate\Http\Request;
- 
+use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Log;
 
 class GasolBotController extends Controller
@@ -260,6 +260,18 @@ class GasolBotController extends Controller
                 
             }
  
+        }
+
+        function registerPhoneNumber(){      
+
+            $response = Http::withToken(config('services.whatsapp.token'))
+                ->post('https://graph.facebook.com/'.config('services.whatsapp.version') .'/'. config('services.whatsapp.phone_id') . '/register', [
+                    "messaging_product" => "whatsapp",
+                    "pin" => "90909090"
+                ]);
+
+            return $response;
+            
         }
  
 }
