@@ -267,7 +267,7 @@ class GasolBotController extends Controller
             $response = Http::withToken(config('services.whatsapp.token'))
                 ->post('https://graph.facebook.com/'.config('services.whatsapp.version') .'/'. config('services.whatsapp.phone_id') . '/register', [
                     "messaging_product" => "whatsapp",
-                    "pin" => "90909090"
+                    "pin" => "909090"
                 ]);
 
             return $response;
