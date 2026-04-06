@@ -278,7 +278,7 @@ class GasolBotController extends Controller
         }
 
         public function sendWhatsAppMessage(
-            $phone=+256787444081, 
+            $phone=256787444081, 
             $meterNumber=58200045274, 
             $message="Your Gas is running low, You have 5 units remainings. Please consider buying a new Token."
             )
@@ -300,11 +300,22 @@ class GasolBotController extends Controller
                     ],
                     "components" => [
                         [
+                            "type" => "header",
+                            "parameters" => [
+                                [
+                                    "type" => "image",
+                                    "image" => [
+                                        "link" => asset("/images/gasol.JPG"),
+                                    ]
+                                ]
+                            ]
+                        ],
+                        [
                             "type" => "body",
                             "parameters" => [
                                 [
                                     "type" => "text",
-                                    "text" => $meterNumber
+                                    "text" => (string)$meterNumber
                                 ],
                                 [
                                     "type" => "text",
@@ -321,18 +332,6 @@ class GasolBotController extends Controller
 
             return $response;
 
-
-            // $client = new \GuzzleHttp\Client();
-
-            // $response = $client->post($url, [
-            //     'headers' => [
-            //         'Authorization' => "Bearer $token",
-            //         'Content-Type' => 'application/json',
-            //     ],
-            //     'json' => $data
-            // ]);
-
-            // return json_decode($response->getBody(), true);
         }
  
 }
