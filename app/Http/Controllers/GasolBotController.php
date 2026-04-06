@@ -276,5 +276,63 @@ class GasolBotController extends Controller
             return $response;
             
         }
+
+        public function sendWhatsAppMessage(
+            $phone=+256787444081, 
+            $meterNumber=58200045274, 
+            $message="Your Gas is running low, You have 5 units remainings. Please consider buying a new Token."
+            )
+        {
+            $url = "https://graph.facebook.com/"
+                    .config('services.whatsapp.version')."/"
+                    .config('services.whatsapp.phone_id')."/messages";
+
+            $token = config('services.whatsapp.token');
+
+            $data = [
+                "messaging_product" => "whatsapp",
+                "to" => $phone,
+                "type" => "template",
+                "template" => [
+                    "name" => "gasol_notifications",
+                    "language" => [
+                        "code" => "en"
+                    ],
+                    "components" => [
+                        [
+                            "type" => "body",
+                            "parameters" => [
+                                [
+                                    "type" => "text",
+                                    "text" => $meterNumber
+                                ],
+                                [
+                                    "type" => "text",
+                                    "text" => $message
+                                ]
+                            ]
+                        ]
+                    ]
+                ]
+            ];
+
+
+            $response = Http::withToken($token)->post($url, $data);
+
+            return $response;
+
+
+            // $client = new \GuzzleHttp\Client();
+
+            // $response = $client->post($url, [
+            //     'headers' => [
+            //         'Authorization' => "Bearer $token",
+            //         'Content-Type' => 'application/json',
+            //     ],
+            //     'json' => $data
+            // ]);
+
+            // return json_decode($response->getBody(), true);
+        }
  
 }
